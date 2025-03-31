@@ -443,7 +443,7 @@ static void simple_aggregate(statement *ost, const proof *pi,
     polx_sub(&phi[s1][i], &phi[s1][i], &com->alpha[i]);
     for (j = 1; j < FL; j++)
       polx_scale_add(&phi[s1][j * r + i], &com->alpha[i],
-                     -(int64_t)(1 << BL * j));
+                     -((int64_t)1 << BL * j));
   }
 }
 
