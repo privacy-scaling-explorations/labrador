@@ -1,11 +1,11 @@
 #ifndef POLZ_H
 #define POLZ_H
 
-#include <stdint.h>
-#include <immintrin.h>
 #include "data.h"
 #include "polx.h"
 #include "poly.h"
+#include <immintrin.h>
+#include <stdint.h>
 
 typedef struct {
   vecn limbs[L];
@@ -16,16 +16,19 @@ void polzvec_copy(polz *r, const polz *a, size_t len);
 void polz_getcoeff(zz *r, const polz *a, int k);
 void polz_setcoeff(polz *r, const zz *a, int k);
 void polz_setcoeff_fromint64(polz *r, int64_t a, int k);
-void polzvec_fromint64vec(polz *r, size_t len, size_t deg, const int64_t v[len*deg*N]);
+void polzvec_fromint64vec(polz *r, size_t len, size_t deg,
+                          const int64_t v[len * deg * N]);
 int polz_iszero(const polz *a);
 int polz_iszero_constcoeff(const polz *a);
 int polzvec_iszero(const polz *a, size_t len);
 
-void polzvec_uniform(polz *r, size_t len, const uint8_t seed[16], uint64_t nonce);
-void polz_bitpack(uint8_t r[N*QBYTES], const polz *a);
+void polzvec_uniform(polz *r, size_t len, const uint8_t seed[16],
+                     uint64_t nonce);
+void polz_bitpack(uint8_t r[N * QBYTES], const polz *a);
 void polzvec_bitpack(uint8_t *r, const polz *a, size_t len);
-void polz_bitunpack(polz *r, const uint8_t buf[N*QBYTES]);
-void polzvec_almostuniform(polz *r, size_t len, const uint8_t seed[16], uint64_t nonce);
+void polz_bitunpack(polz *r, const uint8_t buf[N * QBYTES]);
+void polzvec_almostuniform(polz *r, size_t len, const uint8_t seed[16],
+                           uint64_t nonce);
 double polzvec_norm(const polz *r, size_t len);
 
 void polz_reduce(polz *r);
@@ -58,10 +61,14 @@ void polz_split(poly *l, polz *h, const polz *a, size_t d);
 void polzvec_split(poly *l, polz *h, const polz *a, size_t len, size_t d);
 void polz_decompose(poly *l, const polz *a, size_t stride, size_t t, size_t d);
 void polzvec_decompose(poly *r, const polz *a, size_t len, size_t t, size_t d);
-void polz_decompose_topolx(polx *r, const polz *a, size_t stride, size_t t, size_t d);
-void polzvec_decompose_topolxvec(polx *r, const polz *a, size_t len, size_t stride, size_t t, size_t d);
-void polz_reconstruct(polz *r, const poly *a, size_t stride, size_t t, size_t d);
-void polzvec_reconstruct(polz *r, const poly *a, size_t len, size_t t, size_t d);
+void polz_decompose_topolx(polx *r, const polz *a, size_t stride, size_t t,
+                           size_t d);
+void polzvec_decompose_topolxvec(polx *r, const polz *a, size_t len,
+                                 size_t stride, size_t t, size_t d);
+void polz_reconstruct(polz *r, const poly *a, size_t stride, size_t t,
+                      size_t d);
+void polzvec_reconstruct(polz *r, const poly *a, size_t len, size_t t,
+                         size_t d);
 
 void polz_sigmam1(polz *r, const polz *a);
 void polzvec_sigmam1(polz *r, const polz *a, size_t len);

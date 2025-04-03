@@ -1,13 +1,13 @@
 #ifndef GREYHOUND_H
 #define GREYHOUND_H
 
-#include <stdint.h>
-#include <stddef.h>
+#include "chihuahua.h"
+#include "labrador.h"
 #include "polx.h"
 #include "poly.h"
 #include "polz.h"
-#include "labrador.h"
-#include "chihuahua.h"
+#include <stddef.h>
+#include <stdint.h>
 
 typedef struct {
   size_t len;
@@ -19,7 +19,7 @@ typedef struct {
   poly *t;
   polz *u1;
   uint8_t h[16];
-  uint64_t normsq;  // expected norm
+  uint64_t normsq; // expected norm
 } polcomctx;
 
 typedef struct {
@@ -42,7 +42,8 @@ double print_polcomprf_pp(const polcomprf *pi);
 
 int polcom_commit(polcomctx *ctx, const polz *s, size_t len);
 int64_t polzvec_eval(const polz *a, size_t len, int64_t x);
-void polcom_eval(witness *wt, polcomprf *pi, const polcomctx *ctx, int64_t x, int64_t y);
+void polcom_eval(witness *wt, polcomprf *pi, const polcomctx *ctx, int64_t x,
+                 int64_t y);
 int polcom_reduce(prncplstmnt *st, const polcomprf *pi);
 
 #endif

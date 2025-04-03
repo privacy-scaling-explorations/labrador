@@ -31,9 +31,11 @@ void shake128_inc_finalize(shake128incctx *ctx);
 #define shake128_inc_squeeze FIPS202_NAMESPACE(shake128_inc_squeeze)
 void shake128_inc_squeeze(uint8_t *out, size_t outlen, shake128incctx *ctx);
 #define shake128_inc_absorb_once FIPS202_NAMESPACE(shake128_inc_absorb_once)
-void shake128_inc_absorb_once(shake128incctx *ctx, const uint8_t *in, size_t inlen);
+void shake128_inc_absorb_once(shake128incctx *ctx, const uint8_t *in,
+                              size_t inlen);
 #define shake128_inc_squeezeblocks FIPS202_NAMESPACE(shake128_inc_squeezeblocks)
-void shake128_inc_squeezeblocks(uint8_t *out, size_t nblocks, shake128incctx *ctx);
+void shake128_inc_squeezeblocks(uint8_t *out, size_t nblocks,
+                                shake128incctx *ctx);
 
 typedef keccak_ctx shake256incctx;
 #define shake256_inc_init FIPS202_NAMESPACE(shake256_inc_init)
@@ -47,9 +49,11 @@ void shake256_inc_finalize(shake256incctx *ctx);
 #define shake256_inc_squeeze FIPS202_NAMESPACE(shake256_inc_squeeze)
 void shake256_inc_squeeze(uint8_t *out, size_t outlen, shake256incctx *ctx);
 #define shake256_inc_absorb_once FIPS202_NAMESPACE(shake256_inc_absorb_once)
-void shake256_inc_absorb_once(shake256incctx *ctx, const uint8_t *in, size_t inlen);
+void shake256_inc_absorb_once(shake256incctx *ctx, const uint8_t *in,
+                              size_t inlen);
 #define shake256_inc_squeezeblocks FIPS202_NAMESPACE(shake256_inc_squeezeblocks)
-void shake256_inc_squeezeblocks(uint8_t *out, size_t nblocks,  shake256incctx *ctx);
+void shake256_inc_squeezeblocks(uint8_t *out, size_t nblocks,
+                                shake256incctx *ctx);
 
 #define shake128 FIPS202_NAMESPACE(shake128)
 void shake128(uint8_t *out, size_t outlen, const uint8_t *in, size_t inlen);

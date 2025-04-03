@@ -1,9 +1,9 @@
 #ifndef SPARSEMAT_H
 #define SPARSEMAT_H
 
+#include "polx.h"
 #include <stddef.h>
 #include <stdint.h>
-#include "polx.h"
 
 typedef struct {
   size_t len;
