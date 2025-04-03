@@ -5,12 +5,12 @@
 #ifndef LOGQ
 #define LOGQ 32
 #endif
-#define QBYTES ((LOGQ+7)/8)
+#define QBYTES ((LOGQ + 7) / 8)
 #define LOGDELTA log2(1.00444)
-#define LIFTS ((128+LOGQ-1)/LOGQ)
+#define LIFTS ((128 + LOGQ - 1) / LOGQ)
 #define TAU1 32
 #define TAU2 8
-#define T 14  // challenge operator norm
+#define T 14    // challenge operator norm
 #define SLACK 2 // FIXME
 
 #if LOGQ == 24
@@ -49,11 +49,11 @@
 
 #ifndef __ASSEMBLER__
 
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 
-#define MIN(a,b) (((a) <= (b)) ? (a) : (b))
-#define MAX(a,b) (((a) >= (b)) ? (a) : (b))
+#define MIN(a, b) (((a) <= (b)) ? (a) : (b))
+#define MAX(a, b) (((a) >= (b)) ? (a) : (b))
 
 typedef struct {
   int16_t p;      // 12 < log2(p) < 14
@@ -95,18 +95,18 @@ typedef struct {
 static void zz_fromint64(zz *r, int64_t a) {
   size_t i;
 
-  for(i=0;i<L-1;i++) {
+  for (i = 0; i < L - 1; i++) {
     r->limbs[i] = a & 0x3FFF;
     a >>= 14;
   }
-  r->limbs[L-1] = a;
+  r->limbs[L - 1] = a;
 }
 
 static int zz_less_than(const zz *a, const zz *b) {
   int i;
   int16_t c = 0;
 
-  for(i=0;i<L;i++)
+  for (i = 0; i < L; i++)
     c = (a->limbs[i] - b->limbs[i] + c) >> 14;
 
   return c;
@@ -117,7 +117,7 @@ static int zz_equal(const zz *a, const zz *b) {
   int16_t c = 0;
   int16_t r = 0;
 
-  for(i=0;i<L;i++) {
+  for (i = 0; i < L; i++) {
     c = a->limbs[i] - b->limbs[i] + c;
     r |= c;
     c >>= 14;
@@ -125,7 +125,7 @@ static int zz_equal(const zz *a, const zz *b) {
 
   r |= c;
   r &= 0x3FFF;
-  r  = -r >> 15;
+  r = -r >> 15;
   r += 1;
   return r;
 }
@@ -135,12 +135,12 @@ static void zz_add(zz *r, const zz *a, const zz *b) {
   int16_t c;
 
   c = 0;
-  for(i=0;i<L-1;i++) {
+  for (i = 0; i < L - 1; i++) {
     r->limbs[i] = a->limbs[i] + b->limbs[i] + c;
     c = r->limbs[i] >> 14;
     r->limbs[i] &= 0x3FFF;
   }
-  r->limbs[L-1] = a->limbs[L-1] + b->limbs[L-1] + c;
+  r->limbs[L - 1] = a->limbs[L - 1] + b->limbs[L - 1] + c;
 }
 
 static void zz_sub(zz *r, const zz *a, const zz *b) {
@@ -148,16 +148,15 @@ static void zz_sub(zz *r, const zz *a, const zz *b) {
   int16_t c;
 
   c = 0;
-  for(i=0;i<L-1;i++) {
+  for (i = 0; i < L - 1; i++) {
     r->limbs[i] = a->limbs[i] - b->limbs[i] + c;
     c = r->limbs[i] >> 14;
     r->limbs[i] &= 0x3FFF;
   }
-  r->limbs[L-1] = a->limbs[L-1] - b->limbs[L-1] + c;
+  r->limbs[L - 1] = a->limbs[L - 1] - b->limbs[L - 1] + c;
 }
 
-__attribute__((aligned(64)))
-extern const qdata modulus;
+__attribute__((aligned(64))) extern const qdata modulus;
 
 #else
 #define _P 0
