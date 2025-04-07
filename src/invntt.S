@@ -1,6 +1,6 @@
 #include "data.h"
-.include "shuffle.inc"
-.include "fq.inc"
+#include "shuffle.inc"
+#include "fq.inc"
 
 .macro update rln,rl0,rl1,rh0,rh1
 vpaddw		%ymm\rh0,%ymm\rl0,%ymm\rln

@@ -1,6 +1,6 @@
 #include "data.h"
-.include "shuffle.inc"
-.include "fq.inc"
+#include "shuffle.inc"
+#include "fq.inc"
 
 #define COMPRESS 0
 
