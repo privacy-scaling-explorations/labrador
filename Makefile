@@ -1,65 +1,61 @@
-CC ?= /usr/bin/cc
+CC ?= /usr/bin/gcc
+RM = /bin/rm
+
+# Directories
+SRC_DIR   := src
+INC_DIR   := include
+TEST_DIR   := test
+EXTRA_DIR := extra # Contains extra includes
+
+BUILD_DIR  := build
+TEST_BUILD := $(BUILD_DIR)/test
+
+# Source files (wildcard for .S and .c)
+SOURCES := $(wildcard $(SRC_DIR)/*.S) $(wildcard $(SRC_DIR)/*.c)
+HEADERS := $(wildcard $(INC_DIR)/*.h)
+
+OBJS := $(patsubst $(SRC_DIR)/%.S,$(BUILD_DIR)/src/%.o,$(filter %.S,$(SOURCES))) \
+        $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/src/%.o,$(filter %.c,$(SOURCES)))
+
+TEST_SRCS := $(wildcard $(TEST_DIR)/*.c)
+TEST_TARGET :=$(patsubst $(TEST_DIR)/%.c,$(TEST_BUILD)/%,$(filter %.c,$(TEST_SRCS)))
+TARGET := $(BUILD_DIR)/libdogs.so
+
+# Flags
 CFLAGS += -std=c2x -Wall -Wextra -Wmissing-prototypes -Wredundant-decls \
   -Wshadow -Wpointer-arith -Wno-unused-function -flto=auto \
   -fwrapv -march=native -mtune=native -O3
-RM = /bin/rm
 
-SOURCES = pack.c greyhound.c dachshund.c chihuahua.c labrador.c \
-  data.c jlproj.c polx.c poly.c polz.c sparsemat.c ntt.S invntt.S \
-  aesctr.c fips202.c randombytes.c cpucycles.c
-HEADERS = pack.h greyhound.h dachshund.h chihuahua.h labrador.h \
-  data.h jlproj.h polx.h poly.h polz.h sparsemat.h fq.inc shuffle.inc \
-  aesctr.h fips202.h randombytes.h malloc.h cpucycles.h
+CFLAGS += -iquote ./$(INC_DIR) -iquote ./$(EXTRA_DIR)
+TEST_FLAGS = $(CFLAGS) -DTEST
 
+
+# Build rules
 .PHONY: all
+all: $(TARGET) $(TEST_TARGET)
 
-all: \
-  test_aesctr \
-  test_ntt \
-  test_poly \
-  test_polz \
-  test_jlproj \
-  test_chihuahua \
-  test_dachshund \
-  test_greyhound
+.PHONY: test
+test: $(TEST_TARGET)
 
-%.o: %.c
+.PHONY: lib
+lib: $(TARGET)
+
+$(BUILD_DIR)/src/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)/src
 	$(CC) $(CFLAGS) -c $< -o $@
 
-test_aesctr: test_aesctr.c aesctr.c aesctr.h randombytes.c randombytes.h cpucycles.c cpucycles.h
-	$(CC) $(CFLAGS) test_aesctr.c aesctr.c randombytes.c cpucycles.c -o test_aesctr -lcrypto
+$(BUILD_DIR)/src/%.o: $(SRC_DIR)/%.S | $(BUILD_DIR)/src
+	$(CC) -pipe  $(CFLAGS)-c $< -o $@
 
-test_ntt: test_ntt.c data.c data.h poly.c poly.h ntt.S invntt.S fq.inc shuffle.inc aesctr.c aesctr.h fips202.c fips202.h randombytes.c randombytes.h cpucycles.c cpucycles.h
-	$(CC) $(CFLAGS) test_ntt.c data.c poly.c ntt.S invntt.S aesctr.c fips202.c randombytes.c cpucycles.c -o test_ntt -lm
+$(TEST_BUILD)/%: $(TEST_DIR)/%.c  $(OBJS)  | $(TEST_BUILD)
+	$(CC) $(TEST_FLAGS)   $^ -o $@ -lm -lgmp -lcrypto
 
-test_poly: test_poly.c data.c data.h poly.c poly.h ntt.S invntt.S fq.inc shuffle.inc aesctr.c aesctr.h fips202.c fips202.h randombytes.c randombytes.h
-	$(CC) $(CFLAGS) test_poly.c data.c poly.c ntt.S invntt.S aesctr.c fips202.c randombytes.c -o test_poly -lm
+$(TARGET): $(SOURCES)  | $(BUILD_DIR)
+	$(CC) -shared -fPIC -fvisibility=hidden $(CFLAGS) $^ -o $@
 
-test_polz: test_polz.c data.c data.h polx.c polx.h poly.c poly.h polz.c polz.h ntt.S invntt.S fq.inc shuffle.inc aesctr.c aesctr.h fips202.c fips202.h randombytes.c randombytes.h cpucycles.c cpucycles.h
-	$(CC) $(CFLAGS) test_polz.c data.c polx.c poly.c polz.c ntt.S invntt.S aesctr.c fips202.c randombytes.c cpucycles.c -o test_polz -lm -lgmp
+# Create directories
+$(BUILD_DIR) $(BUILD_DIR)/src $(TEST_BUILD):
+	mkdir -p $@
 
-test_jlproj: test_jlproj.c data.c data.h jlproj.c jlproj.h polx.c polx.h poly.c poly.h polz.c polz.h ntt.S invntt.S fq.inc shuffle.inc aesctr.c aesctr.h fips202.c fips202.h randombytes.c randombytes.h cpucycles.c cpucycles.h
-	$(CC) $(CFLAGS) test_jlproj.c jlproj.c data.c polx.c poly.c polz.c ntt.S invntt.S aesctr.c fips202.c randombytes.c cpucycles.c -o test_jlproj -lm
-
-test_chihuahua: test_chihuahua.c $(SOURCES) $(HEADERS)
-	$(CC) $(CFLAGS) test_chihuahua.c $(SOURCES) -o $@ -lm
-
-test_dachshund: test_dachshund.c $(SOURCES) $(HEADERS)
-	$(CC) $(CFLAGS) test_dachshund.c $(SOURCES) -o $@ -lm
-
-test_greyhound: test_greyhound.c $(SOURCES) $(HEADERS)
-	$(CC) $(CFLAGS) test_greyhound.c $(SOURCES) -o $@ -lm
-
-libdogs.so: $(SOURCES) $(HEADERS)
-	$(CC) -shared -fPIC -fvisibility=hidden $(CFLAGS) -o $@ $(SOURCES)
-
+.PHONY: clean
 clean:
-	-$(RM) -rf *.o *.so
-	-$(RM) -rf test_aesctr
-	-$(RM) -rf test_ntt
-	-$(RM) -rf test_poly
-	-$(RM) -rf test_polz
-	-$(RM) -rf test_jlproj
-	-$(RM) -rf test_chihuahua
-	-$(RM) -rf test_dachshund
-	-$(RM) -rf test_greyhound
+	rm -rf $(BUILD_DIR)
